@@ -87,7 +87,7 @@ export default function ImageParticle({
   useEffect(() => {
     setTimeout(() => {
       png.onload = drawScene;
-      png.src = imgUrl ? imgUrl : `http://localhost:4000/${item.image}`;
+      png.src = imgUrl ? imgUrl : `${import.meta.env.VITE_URL_BASE_SERVER}/${item.image}`;
     }, 100);
   }, []);
   useEffect(() => {

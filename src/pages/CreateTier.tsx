@@ -14,7 +14,7 @@ import { io } from 'socket.io-client';
 import { Message, MessageResponse } from '../typings/Message';
 import Config from '../components/Config/Config';
 import { ImageParticleInfo } from '../typings/ImageParticleInfo';
-const socket = io('http://localhost:4002');
+const socket = io(`${import.meta.env.VITE_URL_SOCKET}`);
 
 interface TierPageState {
   itemSelected: Item | null;

@@ -32,7 +32,7 @@ export default function ItemTier({
         isSelected && 'opacity-100'
       } ${!isInTier && 'cursor-pointer'}`}
       style={{
-        backgroundImage: `url('http://localhost:4000/${item.image}')`,
+        backgroundImage: `url('${import.meta.env.VITE_URL_BASE_SERVER}/${item.image}')`,
       }}
       onClick={onSelectItem ? () => onSelectItem(item):undefined}
       ref={drag}

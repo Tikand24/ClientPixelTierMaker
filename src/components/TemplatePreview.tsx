@@ -19,7 +19,7 @@ export default function TemplatePreview({ template }: Props) {
         onClick={onClick}
         className="grid content-end  justify-items-stretch bg-cover bg-center w-36 h-36 border-2 border-slate-200 mx-1 hover:bg-sky-700 "
         style={{
-          backgroundImage: `url('http://localhost:4000/${template.image}')`,
+          backgroundImage: `url('${import.meta.env.VITE_URL_BASE_SERVER}/${template.image}')`,
         }}
       >
         <div className="bg-black text-white text-center"> {template.name} </div>
