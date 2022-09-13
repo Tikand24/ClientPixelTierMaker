@@ -12,8 +12,8 @@ interface Props {
   items: Item[];
   itemSelected: Item | null;
   messages: Message[];
-  onRemoveItem: any;
-  imageParticleInfo: ImageParticleInfo;
+  onRemoveItem?: any;
+  imageParticleInfo?: ImageParticleInfo;
 }
 export default function TierSection({
   tier,
@@ -59,8 +59,10 @@ export default function TierSection({
               messages={messages}
               key={`imagePArticle-${tier.name}`}
               tierId={tier.id.toString()}
-              quadrantNumber={imageParticleInfo.quadrantNumber}
-              command={imageParticleInfo.command}
+              quadrantNumber={
+                imageParticleInfo ? imageParticleInfo.quadrantNumber : 0
+              }
+              command={imageParticleInfo ? imageParticleInfo.command : ''}
             />
           ) : (
             'isNotData'

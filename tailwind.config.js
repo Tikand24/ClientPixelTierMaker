@@ -1,13 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  safelist:[
-    'red-300',
-    'orange-300',
-    'amber-300',
-    'yellow-300',
-    'green-300',
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
   presets: [],
   darkMode: 'media', // or 'class'
   theme: {
@@ -938,6 +931,11 @@ module.exports = {
       40: '40',
       50: '50',
     },
+    extend: {
+      backgroundColor: {
+        'orange-tier': '#7c2d12',
+      },
+    }
   },
   variantOrder: [
     'first',

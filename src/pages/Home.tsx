@@ -13,7 +13,7 @@ export default function HomePage(): ReactElement {
   const [categories, setCategories] = useState<AppState['categories']>([]);
 
   useEffect(() => {
-    API.get('tier').then((response:any)=>{
+    API.get('category').then((response:any)=>{
       setCategories(response.data.data);
       console.log('responseAny',response);
     }).catch(error=>console.log('error',error));

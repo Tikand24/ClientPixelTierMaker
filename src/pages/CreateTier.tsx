@@ -41,8 +41,8 @@ export default function CreateTierPage(): ReactElement {
   });
 
   const [tiers, setTiers] = useState<TierPageState['tiers']>([
-    { id: 1, name: 'S', order: 1, color: 'red-300', itemSelected: [] },
-    { id: 2, name: 'A', order: 1, color: 'orange-300', itemSelected: [] },
+    { id: 1, name: 'S', order: 1, color: 'orange-300', itemSelected: [] },
+    { id: 2, name: 'A', order: 1, color: 'red-300', itemSelected: [] },
     { id: 3, name: 'B', order: 1, color: 'amber-300', itemSelected: [] },
     { id: 4, name: 'C', order: 1, color: 'yellow-300', itemSelected: [] },
     { id: 5, name: 'D', order: 1, color: 'green-300', itemSelected: [] },
@@ -183,12 +183,6 @@ export default function CreateTierPage(): ReactElement {
               />
             );
           })}
-          <button
-            onClick={() => setAdminMode(!adminMode)}
-            className="px-4 py-2 mt-4 font-semibold text-sm bg-cyan-500 text-white rounded shadow-sm"
-          >
-            AdminMode {`${adminMode}`}
-          </button>
           <div className="flex flex-wrap">
             {adminMode
               ? items.map((item, index) => {
@@ -217,6 +211,11 @@ export default function CreateTierPage(): ReactElement {
             onSelectedTier={handleSelectedTier}
           />
         </div>
+        <div className="bg-orange-300"></div>
+        <div className="bg-red-300"></div>
+        <div className="bg-amber-300"></div>
+        <div className="bg-yellow-300"></div>
+        <div className="bg-green-300"></div>
       </DndProvider>
     </>
   );
