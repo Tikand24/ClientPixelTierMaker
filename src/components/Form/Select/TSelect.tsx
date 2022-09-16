@@ -18,7 +18,7 @@ export default function TSelect({label,value,options,onChange}:Props): ReactElem
         <div>
           <select id="selectPreFile" className='p-2 w-full' value={value} onChange={onChange}>
           <option value={undefined}>Seleccione un dato</option>
-            {options.map(option=>(<option value={option.value}>{option.description}</option>))}
+            {options.map(option=>(<option value={option.value} key={`valKey${option.value}`}>{option.description}</option>))}
           </select>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 interface Props {
   label: string;
-  value: string | number | readonly string[] | undefined;
+  value: any;
   onChange?: any;
 }
 

@@ -27,10 +27,10 @@ export default function VoteItem({
         <div className="flex flex-row justify-center mt-4 ">
           {tiers.map((tier) => (
             <div
-              key={`voteItem${tier.id}`}
+              key={`voteItem${tier._id}`}
               className={`border-2 border-sky-500 w-16 h-16 transition ease-in-out hover:-translate-y-1 hover:scale-110 duration-100  bg-${
                 tier.color
-              } ${tierSelected?.id == tier.id ? 'opacity-100' : 'opacity-50'} `}
+              } ${tierSelected?._id == tier._id ? 'opacity-100' : 'opacity-50'} `}
               onClick={() => setTierSelected(tier)}
             >
               {tier.name}

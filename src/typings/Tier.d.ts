@@ -1,9 +1,14 @@
 import { Item } from './Item';
 
 export interface Tier {
-  id: number;
+  _id: number;
   name: string;
   order: number;
   color: string;
   itemSelected: Item[];
+}
+export interface TierRequest {
+  name: string;
+  order: number;
+  color: string;
 }

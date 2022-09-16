@@ -58,7 +58,7 @@ export default function TierSection({
               item={itemSelected}
               messages={messages}
               key={`imagePArticle-${tier.name}`}
-              tierId={tier.id.toString()}
+              tierId={tier._id.toString()}
               quadrantNumber={
                 imageParticleInfo ? imageParticleInfo.quadrantNumber : 0
               }

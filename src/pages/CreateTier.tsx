@@ -14,6 +14,7 @@ import { io } from 'socket.io-client';
 import { Message, MessageResponse } from '../typings/Message';
 import Config from '../components/Config/Config';
 import { ImageParticleInfo } from '../typings/ImageParticleInfo';
+import { TIERS } from '../typings/enums/Tier';
 const socket = io(`${import.meta.env.VITE_URL_SOCKET}`);
 
 interface TierPageState {
@@ -40,19 +41,13 @@ export default function CreateTierPage(): ReactElement {
     command: '',
   });
 
-  const [tiers, setTiers] = useState<TierPageState['tiers']>([
-    { id: 1, name: 'S', order: 1, color: 'orange-300', itemSelected: [] },
-    { id: 2, name: 'A', order: 1, color: 'red-300', itemSelected: [] },
-    { id: 3, name: 'B', order: 1, color: 'amber-300', itemSelected: [] },
-    { id: 4, name: 'C', order: 1, color: 'yellow-300', itemSelected: [] },
-    { id: 5, name: 'D', order: 1, color: 'green-300', itemSelected: [] },
-  ]);
+  const [tiers, setTiers] = useState<TierPageState['tiers']>(TIERS);
   const [items, setItems] = useState<TierPageState['items']>([]);
 
   useEffect(() => {
     API.get(`items/tier/${id}`)
       .then((response: any) => {
-        setItems(response.data.data);
+        setItems(response.data);
         console.log('responseAny', response);
         socket.connect();
         console.log('connected', id, socket.connected);
@@ -111,7 +106,7 @@ export default function CreateTierPage(): ReactElement {
     let originTiers = tiers;
     if (itemSelected) {
       originTiers = handleRemoveItemTier(itemSelected);
-      const indexTier = originTiers.findIndex((tier) => tier.id === data.id);
+      const indexTier = originTiers.findIndex((tier) => tier._id === data._id);
       if (indexTier != -1) {
         const modifyTier = originTiers[indexTier];
         const findItemTier = modifyTier.itemSelected.find(

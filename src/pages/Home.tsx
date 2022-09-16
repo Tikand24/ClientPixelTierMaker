@@ -14,8 +14,7 @@ export default function HomePage(): ReactElement {
 
   useEffect(() => {
     API.get('category').then((response:any)=>{
-      setCategories(response.data.data);
-      console.log('responseAny',response);
+      setCategories(response.data);
     }).catch(error=>console.log('error',error));
   }, []);
 
