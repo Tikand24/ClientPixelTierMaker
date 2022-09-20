@@ -22,9 +22,12 @@ interface TemplateCreateState {
   tiers: Array<Tier>;
   images: Array<any>;
   imagesValues: Array<any>;
+  loadingSave: boolean;
 }
 
 export default function TemplateCreate(): ReactElement {
+  const [loadingSave, setLoadingSave] =
+    useState<TemplateCreateState['loadingSave']>(false);
   const [name, setName] = useState<TemplateCreateState['name']>('');
   const [images, setImages] = useState<TemplateCreateState['images']>([]);
   const [imagesValues, setImagesValues] = useState<
@@ -79,6 +82,7 @@ export default function TemplateCreate(): ReactElement {
     }
   };
   const handleCreateTemplate = async () => {
+    setLoadingSave(true);
     var bodyFormData = new FormData();
     images.map((image) => bodyFormData.append('myfile', image));
     const files: Storage[] = [];
@@ -86,13 +90,14 @@ export default function TemplateCreate(): ReactElement {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
       .then((response: StorageResponse) => {
+        console.log('filesStorage',response.data);
         response.data.map((storage) => files.push(storage));
       })
-      .catch((error) => console.error('error', error));
+      .catch((error) => console.error('error', error) );
     let templateId = '';
     await API.post('template', {
       name: name,
-      medias: files.map((file) => file.url),
+      medias: files.map((file) => file.filename),
       categoryId: category,
       tiers: tiers.map((tier) => ({
         name: tier.name,
@@ -107,6 +112,8 @@ export default function TemplateCreate(): ReactElement {
         }
       })
       .catch((error) => console.error('error', error));
+      
+    setLoadingSave(false);
   };
   return (
     <>
@@ -243,10 +250,30 @@ export default function TemplateCreate(): ReactElement {
           <div className="mt-5">
             <div className="flex">
               <button
-                className="w-full sm:w-auto py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white  text-sm font-semibold rounded-md shadow focus:outline-none cursor-pointer"
+                className={`inline-flex items-center w-full sm:w-auto py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white  text-sm font-semibold rounded-md shadow focus:outline-none ${
+                  loadingSave ? 'cursor-not-allowed' : 'cursor-pointer'
+                }`}
                 onClick={handleCreateTemplate}
+                disabled={loadingSave}
               >
                 Crear template
+                {
+                  loadingSave && (<svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="animate-pulse w-6 h-6 mx-2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+                    />
+                  </svg>)
+                }
+                
               </button>
             </div>
           </div>

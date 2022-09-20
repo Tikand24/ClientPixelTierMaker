@@ -93,7 +93,7 @@ export default function ImageParticle({
   useEffect(() => {
     const messageSelected = messages[messages.length - 1];
     if (messageSelected) {
-      if (messageSelected.tier.id.toString() === tierId) {
+      if (messageSelected.tier._id.toString() === tierId) {
         handleAddGrid();
       }
     }

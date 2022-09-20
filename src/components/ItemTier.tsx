@@ -26,7 +26,7 @@ export default function ItemTier({
   const isSelected = itemSelected?._id === item._id;
   return (
     <div
-      className={` relative  basis-1/6 border-2 border-sky-500  rounded-md bg-cover bg-center h-20  bg-origin-content ${
+      className={` relative  basis-1/12 border-2 border-sky-500  rounded-md bg-cover bg-center h-32  bg-origin-content ${
         isDragging &&'bg-red-300'
       } ${itemSelected && 'opacity-50'} ${
         isSelected && 'opacity-100'

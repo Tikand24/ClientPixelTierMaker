@@ -24,7 +24,6 @@ export default function TierSection({
   imageParticleInfo,
 }: Props): ReactElement {
   useEffect(() => {
-    console.log('effect', tier);
   }, [tier]);
   const color = `bg-${tier.color}`;
   const [{ isOver }, drop] = useDrop(() => ({
@@ -64,8 +63,7 @@ export default function TierSection({
               }
               command={imageParticleInfo ? imageParticleInfo.command : ''}
             />
-          ) : (
-            'isNotData'
+          ) : (''
           )}
           {tier.itemSelected.map((item) => {
             return (

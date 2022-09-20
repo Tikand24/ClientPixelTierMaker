@@ -15,6 +15,8 @@ import { Message, MessageResponse } from '../typings/Message';
 import Config from '../components/Config/Config';
 import { ImageParticleInfo } from '../typings/ImageParticleInfo';
 import { TIERS } from '../typings/enums/Tier';
+import { TemplateResponse } from '../typings/Template';
+import UserVoteList from '../components/UserVoteList';
 const socket = io(`${import.meta.env.VITE_URL_SOCKET}`);
 
 interface TierPageState {
@@ -25,12 +27,15 @@ interface TierPageState {
   imageParticleInfo: ImageParticleInfo;
   usersVotes: string[];
   adminMode: boolean;
+  firstTime: boolean;
 }
 
 export default function CreateTierPage(): ReactElement {
   const { id } = useParams();
   const [adminMode, setAdminMode] = useState<TierPageState['adminMode']>(true);
+  const [firstTime, setFirstTime] = useState<TierPageState['firstTime']>(false);
   const [messages, setMessages] = useState<TierPageState['messages']>([]);
+  const [usersVotes, setUsersVotes] = useState<TierPageState['usersVotes']>([]);
   const [itemSelected, setItemSelected] =
     useState<TierPageState['itemSelected']>(null);
   const [imageParticleInfo, setImageParticleInfo] = useState<
@@ -41,27 +46,16 @@ export default function CreateTierPage(): ReactElement {
     command: '',
   });
 
-  const [tiers, setTiers] = useState<TierPageState['tiers']>(TIERS);
+  const [tiers, setTiers] = useState<TierPageState['tiers']>([]);
   const [items, setItems] = useState<TierPageState['items']>([]);
-
-  useEffect(() => {
-    API.get(`items/tier/${id}`)
-      .then((response: any) => {
-        setItems(response.data);
-        console.log('responseAny', response);
-        socket.connect();
-        console.log('connected', id, socket.connected);
-      })
-      .catch((error) => console.log('error', error));
-
+  const initSocketEvents = (tiersSelected: Array<Tier>) => {
     socket.on('connect', () => {
-      console.log('connectedSoket', socket.id); // x8WIv7-mJelg7on_ALbx
+      console.log('connectedSoket', socket.id);
     });
 
-    socket.on('itemRecive', (datta: Item) => {
+    socket.on('itemRecive', (data: Item) => {
       try {
-        console.log('itemRecive', datta);
-        handleSelectedItem(datta, false);
+        handleSelectedItem(data, false);
       } catch (e) {
         console.log('error', e);
       }
@@ -69,7 +63,7 @@ export default function CreateTierPage(): ReactElement {
     socket.on('voteReceived', (message: MessageResponse) => {
       try {
         if (!message) return;
-        const tierFind = tiers.find((t) => {
+        const tierFind = tiersSelected.find((t) => {
           if (message.message) {
             return message.message
               .trim()
@@ -78,18 +72,42 @@ export default function CreateTierPage(): ReactElement {
           }
         });
         if (tierFind) {
-          setMessages(
-            messages.concat({
-              tier: tierFind,
-              message: message.message,
-              username: message.username,
-            })
-          );
+          const userVoteFind = usersVotes.find(user=>user===message.username)
+          if(!userVoteFind){
+            setUsersVotes((usersVotes) => [message.username, ...usersVotes]);
+            setMessages(
+              messages.concat({
+                tier: tierFind,
+                message: message.message,
+                username: message.username,
+              })
+            );
+          }
         }
       } catch (e) {
         console.log('error', e);
       }
     });
+  };
+  useEffect(() => {
+    socket.connect();
+    API.get(`template/${id}`)
+      .then((response: TemplateResponse) => {
+        if (response.data) {
+          setTiers(response.data.tiers);
+          setItems(
+            response.data.medias.map((media) => ({
+              _id: Date.now(),
+              name: '',
+              image: media,
+            }))
+          );
+          console.log('firstTime',firstTime);
+          setFirstTime(true);
+          initSocketEvents(response.data.tiers);
+        }
+      })
+      .catch((error) => console.log('error', error));
   }, []);
 
   const handleSelectedItem = (data: Item, sendEmitData = true) => {
@@ -165,6 +183,7 @@ export default function CreateTierPage(): ReactElement {
             onChangeCommandChat={handleChangeCommandChat}
             onChangeQuadrant={handleChangeQuadrant}
           />
+          <UserVoteList messages={usersVotes} />
           {tiers.map((tier) => {
             return (
               <TierSection

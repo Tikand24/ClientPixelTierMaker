@@ -11,10 +11,11 @@ interface AppState {
 
 export default function HomePage(): ReactElement {
   const [categories, setCategories] = useState<AppState['categories']>([]);
-
   useEffect(() => {
     API.get('category').then((response:any)=>{
-      setCategories(response.data);
+      if(response.data){
+        setCategories(response.data);
+      }
     }).catch(error=>console.log('error',error));
   }, []);
 

@@ -6,10 +6,10 @@ interface Props {
 }
 export default function CategoryList({ categories }: Props) {
   return (
-    <div className="mt-20">
+    <div className="my-5">
       {categories.map((category) => {
         return (
-          <div className="py-10" key={`Category-${category.name}`}>
+          <div className="py-5" key={`Category-${category.name}`}>
             <div className="font-bold text-xl">
               Featured <span className="text-sky-600">{category.name}</span>{' '}
               templates
