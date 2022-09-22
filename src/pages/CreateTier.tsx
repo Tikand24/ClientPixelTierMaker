@@ -44,6 +44,7 @@ export default function CreateTierPage(): ReactElement {
     messages: [],
     quadrantNumber: 2,
     command: '',
+    channel:'',
   });
 
   const [tiers, setTiers] = useState<TierPageState['tiers']>([]);
@@ -170,6 +171,30 @@ export default function CreateTierPage(): ReactElement {
       quadrantNumber: parseInt(e.target.value),
     });
   };
+  const handleChangeChannel = (e: any) => {
+    setImageParticleInfo({
+      ...imageParticleInfo,
+      channel: e.target.value,
+    });
+  };
+  const handleSearchChannel = async () => {
+    API.get(`config/track-chat/${imageParticleInfo.channel}`)
+      .then((response: any) => {
+        setUsersVotes([]);
+      })
+      .catch((error) => console.error('error', error));
+  };
+  const handleDisconnectChannel = async () => {
+    API.get(`config/disconnect-chat`)
+      .then((response: any) => {
+        setUsersVotes([]);
+        setImageParticleInfo({
+          ...imageParticleInfo,
+          channel: ''
+        });
+      })
+      .catch((error) => console.error('error', error));
+  };
 
   return (
     <>
@@ -179,9 +204,13 @@ export default function CreateTierPage(): ReactElement {
           <div className="text-3xl font-bold underline">Create a Tier</div>
           <Config
             command={imageParticleInfo.command}
+            channel={imageParticleInfo.channel}
             rangeQuadrant={imageParticleInfo.quadrantNumber}
             onChangeCommandChat={handleChangeCommandChat}
             onChangeQuadrant={handleChangeQuadrant}
+            onChangeChannel={handleChangeChannel}
+            onConnectChannel={handleSearchChannel}
+            onDisconnectChannel={handleDisconnectChannel}
           />
           <UserVoteList messages={usersVotes} />
           {tiers.map((tier) => {

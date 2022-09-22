@@ -3,18 +3,27 @@ import TInput from '../Form/Input/TInput';
 import TRange from '../Form/Range/TRange';
 import ImageParticle from '../ImageParticle/ImageParticle';
 import imgUrlPreview from '../../assets/imageparticlepreview.jpg';
+import API from '../../api/api';
 
 interface Props {
   command: string;
   rangeQuadrant: number;
+  channel:string;
   onChangeCommandChat?: any;
   onChangeQuadrant?: any;
+  onChangeChannel?: any;
+  onConnectChannel: any;
+  onDisconnectChannel: any;
 }
 export default function Config({
   onChangeQuadrant,
   onChangeCommandChat,
+  onChangeChannel,
+  onConnectChannel,
+  onDisconnectChannel,
   command,
   rangeQuadrant,
+  channel
 }: Props): ReactElement {
   const [openConfig, setOpenConfig] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
@@ -58,9 +67,32 @@ export default function Config({
                 />
               </svg>
             </div>
+            <div className="mb-2">
+              <TInput
+                label="Canal"
+                key="channelConfig"
+                value={channel}
+                onChange={onChangeChannel}
+              />
+            </div>
+            <div className="my-2">
+              <button
+                className="px-4 py-2 font-semibold text-sm bg-indigo-600  text-white border border-slate-300 rounded-md shadow-sm "
+                onClick={() => onConnectChannel()}
+              >
+                Buscar canal
+              </button>
+              <button
+                className="px-4 py-2 font-semibold text-sm bg-red-600  text-white border border-slate-300 rounded-md shadow-sm "
+                onClick={() => onDisconnectChannel()}
+              >
+                Desconectar chat
+              </button>
+            </div>
             <div>
               <TInput
                 label="Comando de chat"
+                key="chatConfig"
                 value={command}
                 onChange={onChangeCommandChat}
               />
@@ -81,7 +113,8 @@ export default function Config({
               </button>
             </div>
             <div>
-              {showParticle&& (<ImageParticle
+              {showParticle && (
+                <ImageParticle
                   item={itemSelected}
                   messages={[]}
                   key={`imagePArticle-previewConfig`}
@@ -90,7 +123,8 @@ export default function Config({
                   command={command}
                   imgUrl={imgUrlPreview}
                   triggerPreview={openPreview}
-                />)}
+                />
+              )}
             </div>
           </div>
         </div>

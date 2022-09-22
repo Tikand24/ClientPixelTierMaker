@@ -29,7 +29,10 @@ export default function UserVoteList({ messages }: Props): ReactElement {
     return (
       <>
         <div className="absolute inset-y-1/3 border-4 border-gray-500 bg-white left-0 w-80 h-96 rounded-l-lg z-10">
-          <div className="flex flex-col mx-3">
+          <div className="flex mx-3">
+            <div className='grow text-2xl font-bold'>
+              Listado de Usuarios
+              </div>
             <div className="self-end cursor-pointer p-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +50,9 @@ export default function UserVoteList({ messages }: Props): ReactElement {
                 />
               </svg>
             </div>
-            <div className="overflow-y-auto h-80">
+          </div>
+          <div className="flex mx-3">
+            <div className="overflow-y-auto h-80 grow ">
               {messages.map((message, index) => (
                 <div key={`${message}${index}`}>{message}</div>
               ))}

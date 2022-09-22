@@ -3,4 +3,5 @@ export interface ImageParticleInfo {
   messages: Message[];
   quadrantNumber: number;
   command: string;
+  channel:string;
 }
