@@ -18,7 +18,7 @@ export default function TemplatePreview({ template }: Props) {
       <div
       role='button'
         onClick={onClick}
-        className="grid content-end  justify-items-stretch bg-cover bg-center w-36 h-36 border-2 shadow-xl mx-1 hover:bg-sky-700"
+        className="grid content-end  justify-items-stretch bg-cover bg-center w-36 h-36 border-2 shadow-xl mx-1 hover:bg-gray-200"
         style={{
           backgroundImage: `url('${import.meta.env.VITE_URL_BASE_SERVER}/${image}')`,
         }}

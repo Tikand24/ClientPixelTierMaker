@@ -4,16 +4,21 @@ import TRange from '../Form/Range/TRange';
 import ImageParticle from '../ImageParticle/ImageParticle';
 import imgUrlPreview from '../../assets/imageparticlepreview.jpg';
 import API from '../../api/api';
+import { MessageConnection, StatesConnection } from '../../typings/Config';
+import CircleIcon from '../Icons/CircleIcon';
+import { TypeMessage } from '../../typings/enums/TypesMessages';
 
 interface Props {
   command: string;
   rangeQuadrant: number;
-  channel:string;
+  channel: string;
   onChangeCommandChat?: any;
   onChangeQuadrant?: any;
   onChangeChannel?: any;
   onConnectChannel: any;
   onDisconnectChannel: any;
+  loadingConnectionChannel: StatesConnection;
+  statusConnectChannel: MessageConnection;
 }
 export default function Config({
   onChangeQuadrant,
@@ -23,7 +28,9 @@ export default function Config({
   onDisconnectChannel,
   command,
   rangeQuadrant,
-  channel
+  channel,
+  loadingConnectionChannel,
+  statusConnectChannel,
 }: Props): ReactElement {
   const [openConfig, setOpenConfig] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
@@ -75,20 +82,38 @@ export default function Config({
                 onChange={onChangeChannel}
               />
             </div>
-            <div className="my-2">
+            <div className="my-2 inline-flex items-center">
               <button
-                className="px-4 py-2 font-semibold text-sm bg-indigo-600  text-white border border-slate-300 rounded-md shadow-sm "
+                className=" inline-flex items-center px-4 py-2 font-semibold text-sm bg-indigo-600  text-white border border-slate-300 rounded-md shadow-sm "
                 onClick={() => onConnectChannel()}
               >
+                {loadingConnectionChannel.connect && (
+                  <CircleIcon style="animate-spin" />
+                )}
                 Buscar canal
               </button>
               <button
-                className="px-4 py-2 font-semibold text-sm bg-red-600  text-white border border-slate-300 rounded-md shadow-sm "
+                className="inline-flex items-center px-4 py-2 font-semibold text-sm bg-red-600  text-white border border-slate-300 rounded-md shadow-sm "
                 onClick={() => onDisconnectChannel()}
               >
+                {loadingConnectionChannel.disconnect && (
+                  <CircleIcon style="animate-spin" />
+                )}
                 Desconectar chat
               </button>
             </div>
+            {statusConnectChannel.type == TypeMessage.ERROR &&
+              statusConnectChannel.message != '' && (
+                <div className="my-2 inline-flex items-center text-red-600 text-xs">
+                  {statusConnectChannel.message}
+                </div>
+              )}
+            {statusConnectChannel.type == TypeMessage.SUCCESS &&
+              statusConnectChannel.message != '' && (
+                <div className="my-2 inline-flex items-center text-green-600 text-xs">
+                  {statusConnectChannel.message}
+                </div>
+              )}
             <div>
               <TInput
                 label="Comando de chat"

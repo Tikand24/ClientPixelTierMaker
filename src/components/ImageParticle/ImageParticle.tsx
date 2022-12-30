@@ -103,7 +103,7 @@ export default function ImageParticle({
     if (triggerPreview) {
       setTimeout(() => {
         applyPreview();
-      }, 1000);
+      }, 100);
     }
   }, [triggerPreview]);
 

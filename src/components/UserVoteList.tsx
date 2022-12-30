@@ -30,9 +30,10 @@ export default function UserVoteList({ messages }: Props): ReactElement {
       <>
         <div className="absolute inset-y-1/3 border-4 border-gray-500 bg-white left-0 w-80 h-96 rounded-l-lg z-10">
           <div className="flex mx-3">
-            <div className='grow text-2xl font-bold'>
-              Listado de Usuarios
-              </div>
+            <div className="grow text-xl font-bold">
+              Listado de Usuarios:{' '}
+              <span className=" text-green-500 text-lg font-bold tabular-nums"> {messages.length}</span>
+            </div>
             <div className="self-end cursor-pointer p-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

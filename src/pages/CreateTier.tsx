@@ -15,8 +15,10 @@ import { Message, MessageResponse } from '../typings/Message';
 import Config from '../components/Config/Config';
 import { ImageParticleInfo } from '../typings/ImageParticleInfo';
 import { TIERS } from '../typings/enums/Tier';
-import { TemplateResponse } from '../typings/Template';
+import { Template, TemplateResponse } from '../typings/Template';
 import UserVoteList from '../components/UserVoteList';
+import { MessageConnection, StatesConnection } from '../typings/Config';
+import { TypeMessage } from '../typings/enums/TypesMessages';
 const socket = io(`${import.meta.env.VITE_URL_SOCKET}`);
 
 interface TierPageState {
@@ -28,11 +30,24 @@ interface TierPageState {
   usersVotes: string[];
   adminMode: boolean;
   firstTime: boolean;
+  loadingConnectionChannel: StatesConnection;
+  statusConnectChannel: MessageConnection;
+  template:Template | null,
 }
+const BLANK_TYPE_MESSAGE: MessageConnection = {
+  type: TypeMessage.SUCCESS,
+  message: '',
+};
 
 export default function CreateTierPage(): ReactElement {
   const { id } = useParams();
+  const [loadingConnectionChannel, setLoadingConnectionChannel] = useState<
+    TierPageState['loadingConnectionChannel']
+  >({ connect: false, disconnect: false });
+  const [statusConnectChannel, setStatusConnectChannel] =
+    useState<TierPageState['statusConnectChannel']>(BLANK_TYPE_MESSAGE);
   const [adminMode, setAdminMode] = useState<TierPageState['adminMode']>(true);
+  const [template, setTemplate] = useState<TierPageState['template']>(null);
   const [firstTime, setFirstTime] = useState<TierPageState['firstTime']>(false);
   const [messages, setMessages] = useState<TierPageState['messages']>([]);
   const [usersVotes, setUsersVotes] = useState<TierPageState['usersVotes']>([]);
@@ -44,7 +59,7 @@ export default function CreateTierPage(): ReactElement {
     messages: [],
     quadrantNumber: 2,
     command: '',
-    channel:'',
+    channel: '',
   });
 
   const [tiers, setTiers] = useState<TierPageState['tiers']>([]);
@@ -73,8 +88,10 @@ export default function CreateTierPage(): ReactElement {
           }
         });
         if (tierFind) {
-          const userVoteFind = usersVotes.find(user=>user===message.username)
-          if(!userVoteFind){
+          const userVoteFind = usersVotes.find(
+            (user) => user === message.username
+          );
+          if (!userVoteFind) {
             setUsersVotes((usersVotes) => [message.username, ...usersVotes]);
             setMessages(
               messages.concat({
@@ -96,6 +113,7 @@ export default function CreateTierPage(): ReactElement {
       .then((response: TemplateResponse) => {
         if (response.data) {
           setTiers(response.data.tiers);
+          setTemplate(response.data);
           setItems(
             response.data.medias.map((media) => ({
               _id: Date.now(),
@@ -103,7 +121,7 @@ export default function CreateTierPage(): ReactElement {
               image: media,
             }))
           );
-          console.log('firstTime',firstTime);
+          console.log('firstTime', firstTime);
           setFirstTime(true);
           initSocketEvents(response.data.tiers);
         }
@@ -112,8 +130,6 @@ export default function CreateTierPage(): ReactElement {
   }, []);
 
   const handleSelectedItem = (data: Item, sendEmitData = true) => {
-    if (sendEmitData) {
-    }
     if (data._id === itemSelected?._id) {
       setItemSelected(null);
     } else {
@@ -178,22 +194,50 @@ export default function CreateTierPage(): ReactElement {
     });
   };
   const handleSearchChannel = async () => {
-    API.get(`config/track-chat/${imageParticleInfo.channel}`)
+    setStatusConnectChannel(BLANK_TYPE_MESSAGE);
+    setLoadingConnectionChannel({ connect: true, disconnect: false });
+    await API.get(`config/track-chat/${imageParticleInfo.channel}`)
       .then((response: any) => {
         setUsersVotes([]);
+        setStatusConnectChannel({
+          type: TypeMessage.SUCCESS,
+          message: `Conectado al chat de:  ${imageParticleInfo.channel}`,
+        });
+        setLoadingConnectionChannel({ connect: false, disconnect: false });
       })
-      .catch((error) => console.error('error', error));
+      .catch((error) => {
+        setLoadingConnectionChannel({ connect: false, disconnect: false });
+        setStatusConnectChannel({
+          type: TypeMessage.ERROR,
+          message: `Error al conectar al chat de:  ${imageParticleInfo.channel}`,
+        });
+        console.error('error', error);
+      });
   };
   const handleDisconnectChannel = async () => {
-    API.get(`config/disconnect-chat`)
+    setStatusConnectChannel(BLANK_TYPE_MESSAGE);
+    setLoadingConnectionChannel({ connect: false, disconnect: true });
+    await API.get(`config/disconnect-chat`)
       .then((response: any) => {
         setUsersVotes([]);
         setImageParticleInfo({
           ...imageParticleInfo,
-          channel: ''
+          channel: '',
         });
+        setStatusConnectChannel({
+          type: TypeMessage.SUCCESS,
+          message: `Desconectado correctamente`,
+        });
+        setLoadingConnectionChannel({ connect: false, disconnect: false });
       })
-      .catch((error) => console.error('error', error));
+      .catch((error) => {
+        setLoadingConnectionChannel({ connect: false, disconnect: false });
+        setStatusConnectChannel({
+          type: TypeMessage.ERROR,
+          message: `Error al desconectar el chat de:  ${imageParticleInfo.channel}`,
+        });
+        console.error('error', error);
+      });
   };
 
   return (
@@ -201,7 +245,7 @@ export default function CreateTierPage(): ReactElement {
       <DndProvider backend={HTML5Backend}>
         <Head title="Tier Create" />
         <div className="md:container md:mx-auto">
-          <div className="text-3xl font-bold underline">Create a Tier</div>
+          <div className="text-3xl font-bold mb-8">{template && `${template.name} Tier List Maker`}</div>
           <Config
             command={imageParticleInfo.command}
             channel={imageParticleInfo.channel}
@@ -211,6 +255,8 @@ export default function CreateTierPage(): ReactElement {
             onChangeChannel={handleChangeChannel}
             onConnectChannel={handleSearchChannel}
             onDisconnectChannel={handleDisconnectChannel}
+            loadingConnectionChannel={loadingConnectionChannel}
+            statusConnectChannel={statusConnectChannel}
           />
           <UserVoteList messages={usersVotes} />
           {tiers.map((tier) => {
