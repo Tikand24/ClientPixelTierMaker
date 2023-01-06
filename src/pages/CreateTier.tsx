@@ -32,7 +32,7 @@ interface TierPageState {
   firstTime: boolean;
   loadingConnectionChannel: StatesConnection;
   statusConnectChannel: MessageConnection;
-  template:Template | null,
+  template: Template | null;
 }
 const BLANK_TYPE_MESSAGE: MessageConnection = {
   type: TypeMessage.SUCCESS,
@@ -79,6 +79,7 @@ export default function CreateTierPage(): ReactElement {
     socket.on('voteReceived', (message: MessageResponse) => {
       try {
         if (!message) return;
+
         const tierFind = tiersSelected.find((t) => {
           if (message.message) {
             return message.message
@@ -92,6 +93,7 @@ export default function CreateTierPage(): ReactElement {
             (user) => user === message.username
           );
           if (!userVoteFind) {
+            console.log('dataSelected', usersVotes);
             setUsersVotes((usersVotes) => [message.username, ...usersVotes]);
             setMessages(
               messages.concat({
@@ -115,8 +117,8 @@ export default function CreateTierPage(): ReactElement {
           setTiers(response.data.tiers);
           setTemplate(response.data);
           setItems(
-            response.data.medias.map((media) => ({
-              _id: Date.now(),
+            response.data.medias.map((media, index) => ({
+              _id: Date.now() + index,
               name: '',
               image: media,
             }))
@@ -128,13 +130,17 @@ export default function CreateTierPage(): ReactElement {
       })
       .catch((error) => console.log('error', error));
   }, []);
-
   const handleSelectedItem = (data: Item, sendEmitData = true) => {
-    if (data._id === itemSelected?._id) {
-      setItemSelected(null);
-    } else {
-      setItemSelected(data);
-    }
+    setMessages([]);
+    setUsersVotes([]);
+    setItemSelected(null);
+    setTimeout(() => {
+      if (data._id === itemSelected?._id) {
+        setItemSelected(null);
+      } else {
+        setItemSelected(data);
+      }
+    }, 100);
   };
   const handleSelectedTier = (data: Tier | null) => {
     if (!data) return;
@@ -245,7 +251,9 @@ export default function CreateTierPage(): ReactElement {
       <DndProvider backend={HTML5Backend}>
         <Head title="Tier Create" />
         <div className="md:container md:mx-auto">
-          <div className="text-3xl font-bold mb-8">{template && `${template.name} Tier List Maker`}</div>
+          <div className="text-3xl font-bold mb-8">
+            {template && `${template.name} Tier List Maker`}
+          </div>
           <Config
             command={imageParticleInfo.command}
             channel={imageParticleInfo.channel}
@@ -264,6 +272,7 @@ export default function CreateTierPage(): ReactElement {
               <TierSection
                 key={`TierSection-${tier.name}`}
                 tier={tier}
+                totalVotes={usersVotes.length}
                 items={items}
                 itemSelected={itemSelected}
                 messages={messages}

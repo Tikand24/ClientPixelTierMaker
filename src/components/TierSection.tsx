@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { ImageParticleInfo } from '../typings/ImageParticleInfo';
 import { Item } from '../typings/Item';
@@ -13,6 +13,7 @@ interface Props {
   itemSelected: Item | null;
   messages: Message[];
   onRemoveItem?: any;
+  totalVotes: number;
   imageParticleInfo?: ImageParticleInfo;
 }
 export default function TierSection({
@@ -21,10 +22,20 @@ export default function TierSection({
   onRemoveItem,
   itemSelected,
   messages,
+  totalVotes,
   imageParticleInfo,
 }: Props): ReactElement {
+  const [votes, setVotes] = useState(0);
   useEffect(() => {
-  }, [tier]);
+    const selected: number | null =
+      messages.length > 0 ? messages[0].tier._id : null;
+    if (selected) {
+      if (selected == tier._id) {
+        setVotes(votes + 1);
+      }
+    }
+  }, [messages]);
+  useEffect(() => {}, [tier]);
   const color = `bg-${tier.color}`;
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'itemList',
@@ -42,8 +53,17 @@ export default function TierSection({
       }
     }
   };
+  const formatPercentage = (value: number): string => {
+    if (isNaN(Number(value)) || !isFinite(Number(value))) {
+      return '';
+    }
+    const percentage = Number(value).toString().split('.');
+    return percentage.length > 1
+      ? `${percentage[0]}.${percentage[1].substring(0, 2)}`
+      : percentage[0];
+  };
   return (
-    <div className="flex">
+    <div className="flex h-[130px]">
       <div className={`basis-1/12 flex justify-center items-center ${color}`}>
         {tier.name}
       </div>
@@ -63,7 +83,8 @@ export default function TierSection({
               }
               command={imageParticleInfo ? imageParticleInfo.command : ''}
             />
-          ) : (''
+          ) : (
+            ''
           )}
           {tier.itemSelected.map((item) => {
             return (
@@ -77,10 +98,12 @@ export default function TierSection({
           })}
         </div>
       </div>
-      <div className="basis-1/12">
-        <div>Icon config</div>
-        <div>Icon up</div>
-        <div>icun down</div>
+      <div
+        className="basis-1/12 flex justify-center items-center
+       bg-neutral-100 border border-stone-50 text-lg font-bold 
+       slashed-zero text-green-500"
+      >
+        {formatPercentage((votes * 100) / totalVotes)} %
       </div>
     </div>
   );
